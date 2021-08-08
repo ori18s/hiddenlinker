@@ -59,11 +59,16 @@ const HomePage = () => {
       })
       return;
     }
-      
+
+    const {title, description, images, favicons} = await prefetch(url);
+    const inputUrl = url.toLowerCase();
+
     const item = [{
       id: `${moment().format('YYYY-MM-DD').replaceAll('-', '')}${Math.floor(Math.random() * 10000)}`,
-      title: inputUrl,
-      url: inputUrl,
+      image: images.length ? images[0] : favicons.length ? favicons : null,
+      title: title ?? "<타이틀을 입력해주세요>",
+      description: description ?? "",
+      url: inputUrl.toLowerCase(),
       createdAt: moment(),
     }];
 
@@ -110,7 +115,9 @@ const HomePage = () => {
             border={1}
           >
             <Flex direction="row" justify="space-between">
-              <Text style={{ fontSize: 20 }}>{item.url || "12314"}</Text>
+              <Image source={{uri: item.image}} style={{width: 30, height: 30}}/>
+              <Text style={{ fontSize: 20 }}>{item.title}</Text>
+              <Text style={{ fontSize: 10 }}>{item.description}</Text>
               <Text style={{ fontSize: 20 }}>{moment(item.createdAt).format('YYYY-MM-DD')}</Text>
             </Flex>
             <Flex direction="row" justify="space-between" mt={1}>
