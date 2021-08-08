@@ -47,10 +47,8 @@ const HomePage = () => {
   const prefetch = async (url) => await getLinkPreview(url);
 
   const addLink = async () => {
-    let list = linkList;
-    let inputUrl = url;
-    inputUrl = inputUrl.toLowerCase();
-    if (!/^(https?:\/\/).*/.test(inputUrl)) {
+    const list = linkList;
+    if (!/^(https?:\/\/).*/i.test(url)) {
       toast.show({
         title: "url 형식이 아닙니다",
         status: "error",
