@@ -76,7 +76,7 @@ const HomePage = () => {
     setAsyncStorageLinkList(filteredList);
   }
 
-  const chagneArrange = async (obj) => {
+  const changeArrange = async (obj) => {
     setLinkList([...obj.data]);
     setAsyncStorageLinkList([...obj.data]);
   }
@@ -125,7 +125,7 @@ const HomePage = () => {
             data={[...linkList]}
             renderItem={renderItem}
             keyExtractor={(item, index) => `draggable-item-${index}`}
-            onDragEnd={obj => chagneArrange(obj)}
+            onDragEnd={obj => changeArrange(obj)}
           />
         </View>
         <Input
