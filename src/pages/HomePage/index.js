@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
+  Image,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
@@ -22,8 +23,8 @@ const HomePage = () => {
   const [ deleteId, setDeleteId ] = useState(null);
   const [ url, setUrl ] = useState('');
 
-  useEffect(() => {
-    init();
+  useEffect(async () => {
+    await init();
   }, []);
 
   const toast = useToast();
@@ -69,22 +70,22 @@ const HomePage = () => {
     try {
       setLinkList([...list, ...item])
       setUrl("")
-      setAsyncStorageLinkList([...list, ...item])
+      await setAsyncStorageLinkList([...list, ...item])
     } catch (e) {
       // console.warning(e)
     }
   }
 
-  const deleteUrl = () => {
+  const deleteUrl = async () => {
     const filteredList = linkList.filter(item => item.id !== deleteId)
     setLinkList(filteredList);
     setDeleteId(null);
-    setAsyncStorageLinkList(filteredList);
+    await setAsyncStorageLinkList(filteredList);
   }
 
   const changeArrange = async (obj) => {
     setLinkList([...obj.data]);
-    setAsyncStorageLinkList([...obj.data]);
+    await setAsyncStorageLinkList([...obj.data]);
   }
 
   const setAsyncStorageLinkList = async (list) => {
@@ -96,7 +97,9 @@ const HomePage = () => {
       return (
         <TouchableOpacity
           onLongPress={drag}
-          onPress={() => Linking.openURL(item.url)}
+          onPress={async () => {
+            await Linking.openURL(item.url)
+          }}
         >
           <Box
             mb={2}
