@@ -14,6 +14,7 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import moment from 'moment';
+import { getLinkPreview } from "link-preview-js";
 
 
 const HomePage = () => {
@@ -37,6 +38,13 @@ const HomePage = () => {
       // console.warning(e)
     }
   }
+
+  /***
+   * URL로부터 사이트 제목, 설명, url, 이미지 등을 가져옴
+   * @param url
+   * @returns {Promise<{url: string, title: string, description: string, images: string[], favicons: string[]}>}
+   */
+  const prefetch = async (url) => await getLinkPreview(url);
 
   const addLink = async () => {
     let list = linkList;

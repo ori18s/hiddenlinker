@@ -13,7 +13,10 @@
     "@react-navigation/native": "^6.0.1",
     "@react-navigation/stack": "^6.0.1",
     "expo": "~42.0.1",
+    "expo-clipboard": "~1.1.0",
+    "expo-linking": "~2.3.1",
     "expo-status-bar": "~1.0.4",
+    "link-preview-js": "^2.1.8",
     "moment": "^2.29.1",
     "native-base": "^3.0.7",
     "react": "16.13.1",
@@ -28,9 +31,7 @@
     "react-native-swipeable-row": "^0.8.1",
     "react-native-web": "~0.13.12",
     "styled-components": "^5.3.0",
-    "styled-system": "^5.1.5",
-    "expo-clipboard": "~1.1.0",
-    "expo-linking": "~2.3.1"
+    "styled-system": "^5.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
