@@ -17,6 +17,7 @@
     "expo-linking": "~2.3.1",
     "expo-status-bar": "~1.0.4",
     "link-preview-js": "^2.1.8",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "native-base": "^3.0.7",
     "react": "16.13.1",

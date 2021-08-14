@@ -4,18 +4,25 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import {
-  Box, Center, AlertDialog,
-  View, Button, Input, Text, Flex, useToast,
+  Box, Center, AlertDialog, Checkbox, Menu, Pressable,
+  View, Button, Input, Text, Flex, useToast, HamburgerIcon,
 } from "native-base";
+import moment from 'moment';
+import _ from 'lodash';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons'; 
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
-import moment from 'moment';
 import { getLinkPreview } from "link-preview-js";
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+console.log(windowWidth)
 
 
 const HomePage = () => {
@@ -23,8 +30,8 @@ const HomePage = () => {
   const [ deleteId, setDeleteId ] = useState(null);
   const [ url, setUrl ] = useState('');
 
-  useEffect(async () => {
-    await init();
+  useEffect(() => {
+    init();
   }, []);
 
   const toast = useToast();
@@ -70,12 +77,12 @@ const HomePage = () => {
       description: description ?? "",
       url: inputUrl.toLowerCase(),
       createdAt: moment(),
+      checked: false,
     }];
 
     try {
-      setLinkList([...list, ...item])
       setUrl("")
-      await setAsyncStorageLinkList([...list, ...item])
+      setLinkData([...list, ...item])
     } catch (e) {
       // console.warning(e)
     }
@@ -83,18 +90,23 @@ const HomePage = () => {
 
   const deleteUrl = async () => {
     const filteredList = linkList.filter(item => item.id !== deleteId)
-    setLinkList(filteredList);
     setDeleteId(null);
-    await setAsyncStorageLinkList(filteredList);
+    setLinkData(filteredList)
   }
 
-  const changeArrange = async (obj) => {
-    setLinkList([...obj.data]);
-    await setAsyncStorageLinkList([...obj.data]);
+  const setCheckBox = async (id, checked) => {
+    linkList.map(item => {
+      if (item.id === id) {
+        item.checked = checked;
+        return;
+      }
+    })
+    setLinkData(linkList)
   }
 
-  const setAsyncStorageLinkList = async (list) => {
-    await AsyncStorage.setItem('linkList', JSON.stringify(list));
+  const setLinkData = async (arr) => {
+    setLinkList([...arr]);
+    await AsyncStorage.setItem('linkList', JSON.stringify(arr));
   }
 
   const renderItem = useCallback(
@@ -105,6 +117,7 @@ const HomePage = () => {
           onPress={async () => {
             await Linking.openURL(item.url)
           }}
+          key={index}
         >
           <Box
             mb={2}
@@ -114,23 +127,68 @@ const HomePage = () => {
             rounded="md"
             border={1}
           >
-            <Flex direction="row" justify="space-between">
-              <Image source={{uri: item.image}} style={{width: 30, height: 30}}/>
-              <Text style={{ fontSize: 20 }}>{item.title}</Text>
-              <Text style={{ fontSize: 10 }}>{item.description}</Text>
-              <Text style={{ fontSize: 20 }}>{moment(item.createdAt).format('YYYY-MM-DD')}</Text>
-            </Flex>
-            <Flex direction="row" justify="space-between" mt={1}>
-              <Text style={{ fontSize: 20 }}>{item.url}</Text>
-              <TouchableOpacity onPress={() => setDeleteId(item.id)}>
-                <AntDesign name="delete" size={24} color="red"/>
-              </TouchableOpacity>
+            <Flex direction="row" >
+              <Box mr={2} style={{ justifyContent: "center" }}>
+                <Checkbox
+                  colorScheme="green"
+                  value="green"
+                  size="sm"
+                  isChecked={item.checked}
+                  onChange={(value) => setCheckBox(item.id, value)}
+                />
+              </Box>
+              <Box>
+                <Flex direction="row" justify="space-between">
+                  {/* <Image source={{uri: item.image}} style={{width: 30, height: 30}}/> */}
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ fontSize: 20, width: 80 }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ fontSize: 12, marginLeft: 1, marginTop: 5, width: windowWidth - 280 }}
+                  >
+                      {item.description}
+                    </Text>
+                  <Text mr={2} style={{ fontSize: 20, width: 120 }}>{moment(item.createdAt).format('YYYY-MM-DD')}</Text>
+                </Flex>
+                <Flex direction="row" justify="space-between" mt={1}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ fontSize: 20, width: windowWidth - 120 }}
+                  >
+                    {item.url}
+                  </Text>
+                  {/* <Box mr={5}>
+                    <Menu
+                      trigger={(triggerProps) => {
+                        return (
+                          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+                            <HamburgerIcon />
+                          </Pressable>
+                        )
+                      }}
+                    >
+                      <Menu.Item onPress={() => console.log("Arial")}>
+                        <AntDesign name="delete" size={24} color="red"/>
+                      </Menu.Item>
+                    </Menu>
+                  </Box> */}
+                  <TouchableOpacity style={{ marginRight: 20, marginTop: 5 }} onPress={() => setDeleteId(item.id)}>
+                    <AntDesign name="delete" size={24} color="red"/>
+                  </TouchableOpacity>
+                </Flex>
+              </Box>
             </Flex>
           </Box>
         </TouchableOpacity>
         );
-    },
-    []
+    }
   );
 
   return (
@@ -141,7 +199,7 @@ const HomePage = () => {
             data={[...linkList]}
             renderItem={renderItem}
             keyExtractor={(item, index) => `draggable-item-${index}`}
-            onDragEnd={obj => changeArrange(obj)}
+            onDragEnd={obj => setLinkData([...obj.data])}
           />
         </View>
         <Input
